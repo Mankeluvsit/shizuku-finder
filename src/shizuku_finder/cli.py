@@ -8,7 +8,7 @@ from .filtering import filter_known_apps
 from .orchestrator import ScanOrchestrator
 from .readme_index import ReadmeIndex
 from .reporting import write_csv, write_json, write_markdown, write_review_markdown
-from .scanners import FDroidScanner, GitHubCodeScanner
+from .scanners import FDroidScanner, GitHubCodeScanner, GitHubMetaScanner
 from .storage import SQLiteCache
 
 
@@ -16,11 +16,16 @@ def _default_ignore_rules_path() -> Path:
     return Path(__file__).resolve().parents[2] / "data" / "ignore_rules.yaml"
 
 
+def _default_repo_cache_path() -> Path:
+    return Path(__file__).resolve().parents[2] / "cache" / "repos"
+
+
 def run_scan(config: AppConfig) -> None:
     scanners = [
         FDroidScanner("https://f-droid.org/repo/index.xml"),
         FDroidScanner("https://apt.izzysoft.de/fdroid/repo/index.xml"),
         GitHubCodeScanner(config.github_auth),
+        GitHubMetaScanner(config.github_auth, _default_repo_cache_path()),
     ]
     orchestrator = ScanOrchestrator(scanners, _default_ignore_rules_path())
     apps = orchestrator.run()

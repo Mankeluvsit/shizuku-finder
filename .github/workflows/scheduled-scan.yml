@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+env:
+  TARGET_LIST_REPO: ${{ vars.TARGET_LIST_REPO }}
+  TARGET_LIST_PATH: ./list
+
 jobs:
   scan:
     runs-on: ubuntu-latest
@@ -16,6 +20,14 @@ jobs:
       DATABASE_PATH: ./cache/shizuku_finder.sqlite3
     steps:
       - uses: actions/checkout@v4
+      - name: Checkout target list repo
+        if: env.TARGET_LIST_REPO != ''
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.TARGET_LIST_REPO }}
+          path: list
+      - name: Ensure target list path exists
+        run: mkdir -p list
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -33,7 +45,7 @@ jobs:
       - name: Scan
         run: |
           python -m shizuku_finder scan \
-            --target-list-path ./list \
+            --target-list-path $TARGET_LIST_PATH \
             --summary-file SUMMARY.md \
             --json-file summary.json \
             --csv-file summary.csv \
