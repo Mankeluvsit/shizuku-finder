@@ -17,17 +17,27 @@ class GitLabScanner(BaseScanner):
         self.cache = RepoCache(cache_root)
         self.base_url = base_url.rstrip("/")
 
-    def scan(self) -> list[AppRecord]:
-        response = httpx.get(
-            f"{self.base_url}/projects",
-            params={"search": "shizuku", "simple": True, "per_page": 50},
-            timeout=30.0,
-        )
-        response.raise_for_status()
-        projects = response.json()
+    def _fetch_projects(self) -> list[dict]:
+        projects: list[dict] = []
+        with httpx.Client(timeout=30.0) as client:
+            for page in range(1, 4):
+                try:
+                    response = client.get(
+                        f"{self.base_url}/projects",
+                        params={"search": "shizuku", "simple": True, "per_page": 50, "page": page},
+                    )
+                    response.raise_for_status()
+                except httpx.HTTPError:
+                    break
+                batch = response.json()
+                if not batch:
+                    break
+                projects.extend(batch)
+        return projects
 
+    def scan(self) -> list[AppRecord]:
         apps: list[AppRecord] = []
-        for project in projects:
+        for project in self._fetch_projects():
             clone_url = project.get("http_url_to_repo")
             web_url = project.get("web_url")
             if not clone_url or not web_url:

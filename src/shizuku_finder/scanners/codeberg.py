@@ -17,18 +17,28 @@ class CodebergScanner(BaseScanner):
         self.cache = RepoCache(cache_root)
         self.base_url = base_url.rstrip("/")
 
-    def scan(self) -> list[AppRecord]:
-        response = httpx.get(
-            f"{self.base_url}/repos/search",
-            params={"q": "shizuku", "limit": 50},
-            timeout=30.0,
-        )
-        response.raise_for_status()
-        payload = response.json()
-        repos = payload.get("data") or payload.get("repos") or []
+    def _fetch_repos(self) -> list[dict]:
+        repos: list[dict] = []
+        with httpx.Client(timeout=30.0) as client:
+            for page in range(1, 4):
+                try:
+                    response = client.get(
+                        f"{self.base_url}/repos/search",
+                        params={"q": "shizuku", "limit": 50, "page": page},
+                    )
+                    response.raise_for_status()
+                except httpx.HTTPError:
+                    break
+                payload = response.json()
+                batch = payload.get("data") or payload.get("repos") or []
+                if not batch:
+                    break
+                repos.extend(batch)
+        return repos
 
+    def scan(self) -> list[AppRecord]:
         apps: list[AppRecord] = []
-        for repo in repos:
+        for repo in self._fetch_repos():
             clone_url = repo.get("clone_url") or repo.get("ssh_url") or repo.get("html_url")
             web_url = repo.get("html_url") or repo.get("website")
             full_name = repo.get("full_name") or f"{repo.get('owner', {}).get('username', '')}/{repo.get('name', '')}".strip("/")
