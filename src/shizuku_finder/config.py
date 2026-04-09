@@ -13,6 +13,7 @@ class AppConfig:
     json_file: Path
     csv_file: Path
     review_file: Path
+    diff_file: Path
     database_path: Path
 
     @classmethod
@@ -23,6 +24,7 @@ class AppConfig:
         json_file: str | None = None,
         csv_file: str | None = None,
         review_file: str | None = None,
+        diff_file: str | None = None,
         database_path: str | None = None,
     ) -> "AppConfig":
         return cls(
@@ -32,5 +34,6 @@ class AppConfig:
             json_file=Path(json_file or os.getenv("JSON_FILE", "summary.json")),
             csv_file=Path(csv_file or os.getenv("CSV_FILE", "summary.csv")),
             review_file=Path(review_file or os.getenv("REVIEW_FILE", "REVIEW_NEEDED.md")),
+            diff_file=Path(diff_file or os.getenv("DIFF_FILE", "DIFF.md")),
             database_path=Path(database_path or os.getenv("DATABASE_PATH", "./cache/shizuku_finder.sqlite3")),
         )
