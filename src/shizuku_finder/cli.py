@@ -11,8 +11,15 @@ from .orchestrator import ScanOrchestrator
 from .readme_index import ReadmeIndex
 from .reporting import write_csv, write_diff_markdown, write_json, write_markdown, write_review_markdown
 from .scoring import apply_review_classification
-from .scanners import FDroidScanner, GitHubCodeScanner, GitHubMetaScanner
+from .scanners import FDroidScanner, GitHubCodeScanner, GitHubMetaScanner, GitLabScanner
 from .storage import SQLiteCache
+
+_SOURCE_PRIORITY = {
+    "fdroid": 4,
+    "github_code": 3,
+    "github_meta": 2,
+    "gitlab": 1,
+}
 
 
 def _default_ignore_rules_path() -> Path:
@@ -46,7 +53,13 @@ def _normalize_records(apps):
     deduped = {}
     for app in normalized:
         key = (normalize_name(app.name), app.primary_url)
-        if key not in deduped or deduped[key].confidence < app.confidence:
+        current = deduped.get(key)
+        if current is None:
+            deduped[key] = app
+            continue
+        current_priority = _SOURCE_PRIORITY.get(current.source, 0)
+        app_priority = _SOURCE_PRIORITY.get(app.source, 0)
+        if app.confidence > current.confidence or (app.confidence == current.confidence and app_priority > current_priority):
             deduped[key] = app
     return sorted(deduped.values(), key=lambda item: item.name.lower())
 
@@ -57,6 +70,7 @@ def run_scan(config: AppConfig) -> None:
         FDroidScanner("https://apt.izzysoft.de/fdroid/repo/index.xml"),
         GitHubCodeScanner(config.github_auth),
         GitHubMetaScanner(config.github_auth, _default_repo_cache_path()),
+        GitLabScanner(_default_repo_cache_path()),
     ]
     cache = SQLiteCache(config.database_path)
     previous = cache.load_all()

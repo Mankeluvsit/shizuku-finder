@@ -6,27 +6,26 @@ _Last updated: 2026-04-09_
 
 | Phase | Completion |
 |---|---:|
-| 1. Foundation and bootstrap | 74% |
-| 2. Scanner migration and orchestration | 60% |
-| 3. Filtering, evidence, confidence | 45% |
+| 1. Foundation and bootstrap | 76% |
+| 2. Scanner migration and orchestration | 68% |
+| 3. Filtering, evidence, confidence | 58% |
 | 4. Output redesign and diffing | 45% |
 | 5. Workflow automation and publication | 48% |
-| 6. New source expansion | 0% |
-| 7. Testing and cutover readiness | 32% |
+| 6. New source expansion | 35% |
+| 7. Testing and cutover readiness | 38% |
 
-**Overall estimated completion:** 54%
+**Overall estimated completion:** 58%
 
 ## Current pass highlights
-- Added normalization helpers for names and URLs.
-- Added review-needed classification based on confidence and download availability.
-- Added run diffing support with added/removed/changed sections.
-- Upgraded reporting to show confidence values and review grouping.
-- Extended SQLite storage to persist and reload review state.
-- Added diff artifact generation to the active CLI path.
-- Extended scheduled workflow to publish `DIFF.md`.
-- Added diff test coverage.
+- Added a new source beyond the original scope: **GitLab**.
+- Integrated GitLab scanning into the active CLI pipeline.
+- Added source precedence during normalization/deduping.
+- Added normalization utility coverage.
+- Added review-classification coverage.
+- Continued progress on confidence and source-quality handling.
 
 ## Next pass targets
-- Add at least one new source beyond the original scope.
-- Improve source precedence and stronger confidence logic.
-- Add output snapshot tests and more workflow validation.
+- improve GitLab scanner resilience and paging
+- add at least one more external source or deeper source controls
+- add output snapshot tests and workflow validation
+- refine confidence/source precedence further
