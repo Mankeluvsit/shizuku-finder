@@ -6,21 +6,13 @@ from pathlib import Path
 from .config import AppConfig
 from .diffing import compute_diff
 from .filtering import filter_known_apps
-from .normalization import normalize_name, normalize_url
 from .orchestrator import ScanOrchestrator
+from .pipeline import normalize_and_dedupe
 from .readme_index import ReadmeIndex
 from .reporting import write_csv, write_diff_markdown, write_json, write_markdown, write_review_markdown
 from .scoring import apply_review_classification
 from .scanners import CodebergScanner, FDroidScanner, GitHubCodeScanner, GitHubMetaScanner, GitLabScanner
 from .storage import SQLiteCache
-
-_SOURCE_PRIORITY = {
-    "fdroid": 5,
-    "github_code": 4,
-    "github_meta": 3,
-    "gitlab": 2,
-    "codeberg": 1,
-}
 
 
 def _default_ignore_rules_path() -> Path:
@@ -29,40 +21,6 @@ def _default_ignore_rules_path() -> Path:
 
 def _default_repo_cache_path() -> Path:
     return Path(__file__).resolve().parents[2] / "cache" / "repos"
-
-
-def _normalize_records(apps):
-    normalized = []
-    for app in apps:
-        primary = normalize_url(app.primary_url)
-        alternates = tuple(dict.fromkeys(normalize_url(url) for url in app.alternate_urls))
-        normalized.append(
-            type(app)(
-                canonical_id=app.canonical_id,
-                name=app.name,
-                primary_url=primary,
-                source=app.source,
-                description=app.description,
-                alternate_urls=alternates,
-                has_downloads=app.has_downloads,
-                last_updated=app.last_updated,
-                confidence=app.confidence,
-                evidence=app.evidence,
-                review_needed=app.review_needed,
-            )
-        )
-    deduped = {}
-    for app in normalized:
-        key = (normalize_name(app.name), app.primary_url)
-        current = deduped.get(key)
-        if current is None:
-            deduped[key] = app
-            continue
-        current_priority = _SOURCE_PRIORITY.get(current.source, 0)
-        app_priority = _SOURCE_PRIORITY.get(app.source, 0)
-        if app.confidence > current.confidence or (app.confidence == current.confidence and app_priority > current_priority):
-            deduped[key] = app
-    return sorted(deduped.values(), key=lambda item: item.name.lower())
 
 
 def run_scan(config: AppConfig) -> None:
@@ -78,7 +36,7 @@ def run_scan(config: AppConfig) -> None:
     previous = cache.load_all()
     orchestrator = ScanOrchestrator(scanners, _default_ignore_rules_path())
     apps = orchestrator.run()
-    apps = _normalize_records(apps)
+    apps = normalize_and_dedupe(apps)
     apps = filter_known_apps(apps, ReadmeIndex.from_directory(config.target_list_path))
     apps = apply_review_classification(apps)
     diff = compute_diff(previous, apps)
