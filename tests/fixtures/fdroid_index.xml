@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fdroid>
+  <application>
+    <id>com.example.shizukuapp</id>
+    <name>ShizukuApp</name>
+    <summary>Example app using Shizuku permission metadata.</summary>
+    <source>https://github.com/example/shizukuapp</source>
+    <web>https://example.com/shizukuapp</web>
+    <lastupdated>2026-04-01</lastupdated>
+    <package>
+      <permissions>android.permission.INTERNET,moe.shizuku.manager.permission.API_V23</permissions>
+    </package>
+  </application>
+  <application>
+    <id>com.example.nomatch</id>
+    <name>NoMatch</name>
+    <summary>Should not be included.</summary>
+    <source>https://github.com/example/nomatch</source>
+    <lastupdated>2026-04-02</lastupdated>
+    <package>
+      <permissions>android.permission.INTERNET</permissions>
+    </package>
+  </application>
+</fdroid>

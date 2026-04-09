@@ -19,7 +19,10 @@ class FDroidScanner(BaseScanner):
     def scan(self) -> list[AppRecord]:
         response = httpx.get(self.repo_xml_url, follow_redirects=True, timeout=30.0)
         response.raise_for_status()
-        document = minidom.parseString(response.content)
+        return self.parse_xml(response.content)
+
+    def parse_xml(self, xml_content: bytes | str) -> list[AppRecord]:
+        document = minidom.parseString(xml_content)
         apps: list[AppRecord] = []
 
         for application in document.getElementsByTagName("application"):
