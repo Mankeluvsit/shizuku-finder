@@ -1,0 +1,47 @@
+name: Scheduled Scan
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 4 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_AUTH: ${{ secrets.GITHUB_TOKEN }}
+      DATABASE_PATH: ./cache/shizuku_finder.sqlite3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+      - name: Restore cache
+        uses: actions/cache@v4
+        with:
+          path: cache
+          key: shizuku-finder-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            shizuku-finder-${{ runner.os }}-
+      - name: Scan
+        run: |
+          python -m shizuku_finder scan \
+            --target-list-path ./list \
+            --summary-file SUMMARY.md \
+            --json-file summary.json \
+            --csv-file summary.csv \
+            --review-file REVIEW_NEEDED.md
+      - name: Commit generated reports
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add SUMMARY.md summary.json summary.csv REVIEW_NEEDED.md cache || true
+          git diff --cached --quiet || git commit -m "Update generated scan reports"
+          git push
