@@ -1,0 +1,9 @@
+rules:
+  - type: name
+    value: Aurora
+    category: duplicate
+    reason: Detached fork with no meaningful changes
+  - type: url
+    value: https://github.com/RikkaApps/Sui
+    category: requirements_not_met
+    reason: Different project than target discovery scope
