@@ -1,42 +1,31 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
+from pathlib import Path
 
 from .config import AppConfig
-from .models import AppRecord, Evidence
+from .filtering import filter_known_apps
+from .orchestrator import ScanOrchestrator
+from .readme_index import ReadmeIndex
 from .reporting import write_csv, write_json, write_markdown, write_review_markdown
+from .scanners import FDroidScanner, GitHubCodeScanner
 from .storage import SQLiteCache
 
 
-def _seed_records() -> list[AppRecord]:
-    examples = [
-        ("AppDualZuku", "https://github.com/nathanatgit/AppDualZuku", "GitHub", "Manage app multiple instances in workspaces with Shizuku privilege.", 0.91, False),
-        ("DarkSwitch", "https://github.com/mahmutaunal/DarkSwitch", "GitHub", "System-level dark mode attempts for Android apps without native dark theme.", 0.84, False),
-        ("Potential Match", "https://example.com/potential-match", "Seed", "Needs additional validation before publication.", 0.35, True),
-    ]
-    records: list[AppRecord] = []
-    for name, url, source, desc, confidence, review_needed in examples:
-        canonical_id = hashlib.sha1(f"{source}:{url}".encode("utf-8")).hexdigest()
-        evidence = (Evidence(source=source, kind="seed", detail="Initial refactor placeholder dataset", confidence_delta=confidence),)
-        records.append(
-            AppRecord(
-                canonical_id=canonical_id,
-                name=name,
-                primary_url=url,
-                source=source,
-                description=desc,
-                has_downloads=True,
-                confidence=confidence,
-                evidence=evidence,
-                review_needed=review_needed,
-            )
-        )
-    return records
+def _default_ignore_rules_path() -> Path:
+    return Path(__file__).resolve().parents[2] / "data" / "ignore_rules.yaml"
 
 
 def run_scan(config: AppConfig) -> None:
-    apps = _seed_records()
+    scanners = [
+        FDroidScanner("https://f-droid.org/repo/index.xml"),
+        FDroidScanner("https://apt.izzysoft.de/fdroid/repo/index.xml"),
+        GitHubCodeScanner(config.github_auth),
+    ]
+    orchestrator = ScanOrchestrator(scanners, _default_ignore_rules_path())
+    apps = orchestrator.run()
+    apps = filter_known_apps(apps, ReadmeIndex.from_directory(config.target_list_path))
+
     config.summary_file.parent.mkdir(parents=True, exist_ok=True)
     config.json_file.parent.mkdir(parents=True, exist_ok=True)
     config.csv_file.parent.mkdir(parents=True, exist_ok=True)
