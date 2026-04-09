@@ -3,8 +3,7 @@ from __future__ import annotations
 from hashlib import sha1
 from pathlib import Path
 
-import httpx
-
+from shizuku_finder.clients import HttpJsonClient
 from shizuku_finder.models import AppRecord, Evidence
 from shizuku_finder.repo_cache import RepoCache
 from shizuku_finder.scanners.base import BaseScanner
@@ -16,24 +15,14 @@ class GitLabScanner(BaseScanner):
     def __init__(self, cache_root: Path, base_url: str = "https://gitlab.com/api/v4") -> None:
         self.cache = RepoCache(cache_root)
         self.base_url = base_url.rstrip("/")
+        self.http = HttpJsonClient()
 
     def _fetch_projects(self) -> list[dict]:
-        projects: list[dict] = []
-        with httpx.Client(timeout=30.0) as client:
-            for page in range(1, 4):
-                try:
-                    response = client.get(
-                        f"{self.base_url}/projects",
-                        params={"search": "shizuku", "simple": True, "per_page": 50, "page": page},
-                    )
-                    response.raise_for_status()
-                except httpx.HTTPError:
-                    break
-                batch = response.json()
-                if not batch:
-                    break
-                projects.extend(batch)
-        return projects
+        return self.http.get_json_pages(
+            f"{self.base_url}/projects",
+            base_params={"search": "shizuku", "simple": True, "per_page": 50},
+            max_pages=3,
+        )
 
     def scan(self) -> list[AppRecord]:
         apps: list[AppRecord] = []

@@ -3,8 +3,7 @@ from __future__ import annotations
 from hashlib import sha1
 from pathlib import Path
 
-from github import Auth, Github
-
+from shizuku_finder.clients import GitHubSearchClient
 from shizuku_finder.models import AppRecord, Evidence
 from shizuku_finder.repo_cache import RepoCache
 from shizuku_finder.scanners.base import BaseScanner
@@ -14,15 +13,14 @@ class GitHubMetaScanner(BaseScanner):
     name = "github_meta"
 
     def __init__(self, auth_token: str | None, cache_root: Path) -> None:
-        self.auth_token = auth_token
+        self.client = GitHubSearchClient(auth_token)
         self.cache = RepoCache(cache_root)
 
     def scan(self) -> list[AppRecord]:
-        if not self.auth_token:
+        if not self.client.is_enabled():
             return []
 
-        client = Github(auth=Auth.Token(self.auth_token))
-        results = client.search_repositories(
+        results = self.client.search_repositories(
             "(shizuku AND NOT RepainterServicePriv) in:readme in:topics in:description language:Dart language:Kotlin language:Java",
             "stars",
             "desc",

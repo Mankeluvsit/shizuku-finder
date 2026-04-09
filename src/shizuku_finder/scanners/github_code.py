@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from hashlib import sha1
 
-from github import Auth, Github
-
+from shizuku_finder.clients import GitHubSearchClient
 from shizuku_finder.models import AppRecord, Evidence
 from shizuku_finder.scanners.base import BaseScanner
 
@@ -12,14 +11,13 @@ class GitHubCodeScanner(BaseScanner):
     name = "github_code"
 
     def __init__(self, auth_token: str | None) -> None:
-        self.auth_token = auth_token
+        self.client = GitHubSearchClient(auth_token)
 
     def scan(self) -> list[AppRecord]:
-        if not self.auth_token:
+        if not self.client.is_enabled():
             return []
 
-        client = Github(auth=Auth.Token(self.auth_token))
-        results = client.search_code("rikka.shizuku.ShizukuProvider language:XML NOT is:fork")
+        results = self.client.search_code("rikka.shizuku.ShizukuProvider language:XML NOT is:fork")
 
         apps: list[AppRecord] = []
         seen: set[str] = set()
