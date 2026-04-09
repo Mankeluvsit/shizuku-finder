@@ -11,14 +11,15 @@ from .orchestrator import ScanOrchestrator
 from .readme_index import ReadmeIndex
 from .reporting import write_csv, write_diff_markdown, write_json, write_markdown, write_review_markdown
 from .scoring import apply_review_classification
-from .scanners import FDroidScanner, GitHubCodeScanner, GitHubMetaScanner, GitLabScanner
+from .scanners import CodebergScanner, FDroidScanner, GitHubCodeScanner, GitHubMetaScanner, GitLabScanner
 from .storage import SQLiteCache
 
 _SOURCE_PRIORITY = {
-    "fdroid": 4,
-    "github_code": 3,
-    "github_meta": 2,
-    "gitlab": 1,
+    "fdroid": 5,
+    "github_code": 4,
+    "github_meta": 3,
+    "gitlab": 2,
+    "codeberg": 1,
 }
 
 
@@ -71,6 +72,7 @@ def run_scan(config: AppConfig) -> None:
         GitHubCodeScanner(config.github_auth),
         GitHubMetaScanner(config.github_auth, _default_repo_cache_path()),
         GitLabScanner(_default_repo_cache_path()),
+        CodebergScanner(_default_repo_cache_path()),
     ]
     cache = SQLiteCache(config.database_path)
     previous = cache.load_all()

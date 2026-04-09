@@ -6,26 +6,25 @@ _Last updated: 2026-04-09_
 
 | Phase | Completion |
 |---|---:|
-| 1. Foundation and bootstrap | 76% |
-| 2. Scanner migration and orchestration | 68% |
-| 3. Filtering, evidence, confidence | 58% |
-| 4. Output redesign and diffing | 45% |
+| 1. Foundation and bootstrap | 78% |
+| 2. Scanner migration and orchestration | 72% |
+| 3. Filtering, evidence, confidence | 62% |
+| 4. Output redesign and diffing | 58% |
 | 5. Workflow automation and publication | 48% |
-| 6. New source expansion | 35% |
-| 7. Testing and cutover readiness | 38% |
+| 6. New source expansion | 52% |
+| 7. Testing and cutover readiness | 48% |
 
-**Overall estimated completion:** 58%
+**Overall estimated completion:** 63%
 
 ## Current pass highlights
-- Added a new source beyond the original scope: **GitLab**.
-- Integrated GitLab scanning into the active CLI pipeline.
-- Added source precedence during normalization/deduping.
-- Added normalization utility coverage.
-- Added review-classification coverage.
-- Continued progress on confidence and source-quality handling.
+- Added a second new external source beyond the original scope: **Codeberg**.
+- Integrated Codeberg scanning into the active CLI pipeline.
+- Extended source precedence to cover Codeberg.
+- Added reporting-oriented tests covering grouped summary/review output and diff sections.
+- Increased validation around normalization, scoring, diffing, README indexing, repo cache inspection, and reporting.
 
 ## Next pass targets
-- improve GitLab scanner resilience and paging
-- add at least one more external source or deeper source controls
-- add output snapshot tests and workflow validation
+- improve GitLab and Codeberg pagination/resilience
+- add workflow validation and stronger CI assertions
 - refine confidence/source precedence further
+- add more end-to-end and snapshot-style tests
