@@ -1,0 +1,18 @@
+[
+  {
+    "name": "GitLabShizuku",
+    "path": "gitlabshizuku",
+    "path_with_namespace": "example/gitlabshizuku",
+    "http_url_to_repo": "https://gitlab.com/example/gitlabshizuku.git",
+    "web_url": "https://gitlab.com/example/gitlabshizuku",
+    "description": "GitLab project using Shizuku"
+  },
+  {
+    "name": "GitLabNoMatch",
+    "path": "gitlabnomatch",
+    "path_with_namespace": "example/gitlabnomatch",
+    "http_url_to_repo": "https://gitlab.com/example/gitlabnomatch.git",
+    "web_url": "https://gitlab.com/example/gitlabnomatch",
+    "description": "Should be filtered by content matching"
+  }
+]
