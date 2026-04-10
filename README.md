@@ -7,7 +7,7 @@ It is now a modular Shizuku discovery crawler, reporting pipeline, and automatio
 
 The repository currently includes:
 - package structure under `src/shizuku_finder/`
-- multi-source scanners for F-Droid, IzzyOnDroid, GitHub code search, GitHub metadata, GitLab, and Codeberg
+- multi-source scanners for F-Droid, IzzyOnDroid, GitHub code search, GitHub metadata, GitLab, Codeberg, and Bitbucket Cloud
 - failure-aware orchestration that keeps successful scanner output even when one scanner fails
 - known-app suppression against a checked-out target list repository
 - normalization, dedupe, source precedence, and calibrated confidence scoring
@@ -21,7 +21,7 @@ The repository currently includes:
   - `summary.csv`
   - `RUN_SUMMARY.json`
 - CI workflow with Ruff, mypy, and pytest
-- scheduled scan workflow with publication hardening and GitHub job summary output
+- scheduled scan workflow with branch-aware commit-back, artifact fallback, and GitHub job summary output
 - fixture-driven and end-to-end tests covering scanners, pipeline behavior, reporting, workflow expectations, and storage
 
 ## Generated artifacts
@@ -67,6 +67,17 @@ python -m shizuku_finder scan \
   --diff-json-file DIFF.json \
   --run-summary-file RUN_SUMMARY.json
 ```
+
+## GitHub Actions usage
+
+The repository also supports scheduled and manual scans through `.github/workflows/scheduled-scan.yml`.
+That workflow now:
+- checks out the active branch instead of relying on detached-head defaults
+- publishes generated reports back to the branch when possible
+- uploads generated artifacts even if commit-back fails
+- publishes a GitHub job summary from `RUN_SUMMARY.json`
+
+This means the project can be used through either the CLI or GitHub Actions without treating Actions as a secondary path.
 
 ## Status
 

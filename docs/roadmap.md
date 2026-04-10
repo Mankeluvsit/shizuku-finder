@@ -6,21 +6,21 @@ _Last updated: 2026-04-10_
 
 | Phase | Completion |
 |---|---:|
-| 1. Foundation and bootstrap | 92% |
+| 1. Foundation and bootstrap | 94% |
 | 2. Scanner migration and orchestration | 93% |
-| 3. Filtering, evidence, confidence | 90% |
+| 3. Filtering, evidence, confidence | 92% |
 | 4. Output redesign and diffing | 90% |
 | 5. Workflow automation and publication | 92% |
 | 6. New source expansion | 62% |
-| 7. Testing and cutover readiness | 97% |
+| 7. Testing and cutover readiness | 98% |
 
-**Overall estimated completion:** 92%
+**Overall estimated completion:** 93%
 
 ## Current pass highlights
-- Hardened the scheduled GitHub Actions workflow for branch-safe commit-back.
-- Switched checkout to use the active branch ref with full history instead of relying on detached-head defaults.
-- Added artifact upload so generated outputs are still recoverable even if commit-back fails.
-- Updated workflow validation tests to assert branch-aware push and artifact fallback behavior.
+- Completed a cleanup/tuning pass across scoring, tests, and README accuracy.
+- Added Bitbucket confidence-floor coverage so all current active sources are represented in scoring.
+- Refreshed README to reflect the real source set and the GitHub Actions execution path.
+- Continued tightening late-stage docs and validation parity.
 
 ## Approved source expansion shortlist
 
@@ -77,5 +77,5 @@ These are approved for roadmap planning only and are not yet implementation-comp
 15. APKPure
 
 ## Next pass targets
-- final confidence/source tuning pass if needed
 - final cleanup pass across docs, env examples, and minor workflow polish
+- last confidence/source tuning pass only if anything still looks inconsistent

@@ -7,6 +7,7 @@ _SOURCE_FLOOR = {
     'github_code': 0.75,
     'github_meta': 0.72,
     'gitlab': 0.64,
+    'bitbucket': 0.63,
     'codeberg': 0.62,
 }
 

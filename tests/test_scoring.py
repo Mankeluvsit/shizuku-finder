@@ -16,3 +16,9 @@ def test_calibrate_confidence_applies_source_floor_and_bonuses() -> None:
     app = AppRecord(canonical_id="1", name="A", primary_url="https://a", source="github_code", confidence=0.3, has_downloads=True, description="desc")
     calibrated = calibrate_confidence(app)
     assert calibrated.confidence >= 0.85
+
+
+def test_calibrate_confidence_includes_bitbucket_floor() -> None:
+    app = AppRecord(canonical_id="1", name="A", primary_url="https://a", source="bitbucket", confidence=0.1, has_downloads=False)
+    calibrated = calibrate_confidence(app)
+    assert calibrated.confidence >= 0.57
