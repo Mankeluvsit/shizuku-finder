@@ -52,6 +52,30 @@ jobs:
             --review-file REVIEW_NEEDED.md \
             --diff-file DIFF.md \
             --run-summary-file RUN_SUMMARY.json
+      - name: Publish run summary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('RUN_SUMMARY.json')
+          payload = json.loads(path.read_text(encoding='utf-8'))
+          with open(Path.cwd() / 'job-summary.md', 'w', encoding='utf-8') as handle:
+              handle.write('# Scan Summary\n\n')
+              handle.write(f"- Status: **{payload['status']}**\n")
+              handle.write(f"- Total apps: **{payload['total_apps']}**\n")
+              handle.write(f"- Confirmed: **{payload['confirmed']}**\n")
+              handle.write(f"- Review needed: **{payload['review_needed']}**\n")
+              handle.write(f"- Failures: **{payload['failure_count']}**\n")
+          PY
+          cat job-summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Enforce minimum successful output
+        run: |
+          python - <<'PY'
+          import json, sys
+          payload = json.load(open('RUN_SUMMARY.json', encoding='utf-8'))
+          if payload['status'] == 'failed':
+              sys.exit('All scanners failed; refusing to publish empty run.')
+          PY
       - name: Commit generated reports
         run: |
           git config user.name github-actions

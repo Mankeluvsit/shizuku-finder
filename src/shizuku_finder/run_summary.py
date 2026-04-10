@@ -17,7 +17,13 @@ class ScannerFailure:
 
 def write_run_summary(path: Path, apps: list[AppRecord], diff: DiffResult, failures: list[ScannerFailure]) -> None:
     by_source = Counter(app.source for app in apps)
+    status = "ok"
+    if failures and apps:
+        status = "partial"
+    elif failures and not apps:
+        status = "failed"
     summary = {
+        "status": status,
         "total_apps": len(apps),
         "confirmed": sum(1 for app in apps if not app.review_needed),
         "review_needed": sum(1 for app in apps if app.review_needed),
@@ -27,6 +33,7 @@ def write_run_summary(path: Path, apps: list[AppRecord], diff: DiffResult, failu
             "removed": len(diff.removed),
             "changed": len(diff.changed),
         },
+        "failure_count": len(failures),
         "failures": [asdict(failure) for failure in failures],
     }
     path.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
