@@ -1,28 +1,29 @@
 # Roadmap
 
-_Last updated: 2026-04-09_
+_Last updated: 2026-04-10_
 
 ## Progress summary
 
 | Phase | Completion |
 |---|---:|
-| 1. Foundation and bootstrap | 85% |
-| 2. Scanner migration and orchestration | 88% |
-| 3. Filtering, evidence, confidence | 84% |
-| 4. Output redesign and diffing | 70% |
-| 5. Workflow automation and publication | 68% |
+| 1. Foundation and bootstrap | 92% |
+| 2. Scanner migration and orchestration | 90% |
+| 3. Filtering, evidence, confidence | 90% |
+| 4. Output redesign and diffing | 86% |
+| 5. Workflow automation and publication | 86% |
 | 6. New source expansion | 52% |
-| 7. Testing and cutover readiness | 92% |
+| 7. Testing and cutover readiness | 96% |
 
-**Overall estimated completion:** 82%
+**Overall estimated completion:** 90%
 
 ## Current pass highlights
-- Added failure-aware orchestration with scanner failure capture.
-- Added confidence calibration and run-summary generation.
-- Extended the CLI and scheduled workflow to publish `RUN_SUMMARY.json`.
-- Added validation for run-summary output and confidence calibration.
+- Added machine-readable diff output with `DIFF.json`.
+- Enriched markdown reporting with source breakdown and downloadability status.
+- Updated CLI/config/workflow wiring for the new diff artifact.
+- Refreshed README to match the repository's actual current state and artifact set.
+- Expanded reporting tests to validate richer markdown output and diff JSON generation.
 
 ## Next pass targets
-- final automation hardening and failure-path polish
-- optional final source/confidence tuning
-- final cleanup and polish passes
+- optional final source expansion
+- last confidence/source tuning pass if needed
+- final cleanup pass across docs, env examples, and minor workflow polish

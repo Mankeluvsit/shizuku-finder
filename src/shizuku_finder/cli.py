@@ -9,7 +9,7 @@ from .filtering import filter_known_apps
 from .orchestrator import ScanOrchestrator
 from .pipeline import normalize_and_dedupe
 from .readme_index import ReadmeIndex
-from .reporting import write_csv, write_diff_markdown, write_json, write_markdown, write_review_markdown
+from .reporting import write_csv, write_diff_json, write_diff_markdown, write_json, write_markdown, write_review_markdown
 from .run_summary import write_run_summary
 from .scoring import apply_scoring
 from .scanners import CodebergScanner, FDroidScanner, GitHubCodeScanner, GitHubMetaScanner, GitLabScanner
@@ -47,12 +47,14 @@ def run_scan(config: AppConfig) -> None:
     config.csv_file.parent.mkdir(parents=True, exist_ok=True)
     config.review_file.parent.mkdir(parents=True, exist_ok=True)
     config.diff_file.parent.mkdir(parents=True, exist_ok=True)
+    config.diff_json_file.parent.mkdir(parents=True, exist_ok=True)
     config.run_summary_file.parent.mkdir(parents=True, exist_ok=True)
     write_markdown(config.summary_file, apps)
     write_json(config.json_file, apps)
     write_csv(config.csv_file, apps)
     write_review_markdown(config.review_file, apps)
     write_diff_markdown(config.diff_file, diff)
+    write_diff_json(config.diff_json_file, diff)
     write_run_summary(config.run_summary_file, apps, diff, result.failures)
     cache.replace_all(apps)
 
@@ -68,6 +70,7 @@ def build_parser() -> argparse.ArgumentParser:
     scan.add_argument("--csv-file", default=None)
     scan.add_argument("--review-file", default=None)
     scan.add_argument("--diff-file", default=None)
+    scan.add_argument("--diff-json-file", default=None)
     scan.add_argument("--run-summary-file", default=None)
     scan.add_argument("--database-path", default=None)
     return parser
@@ -84,6 +87,7 @@ def main() -> None:
             csv_file=args.csv_file,
             review_file=args.review_file,
             diff_file=args.diff_file,
+            diff_json_file=args.diff_json_file,
             run_summary_file=args.run_summary_file,
             database_path=args.database_path,
         )

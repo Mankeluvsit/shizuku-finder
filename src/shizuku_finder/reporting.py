@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+from collections import Counter
 from pathlib import Path
 from typing import Iterable
 
@@ -15,13 +16,15 @@ def _sort(apps: Iterable[AppRecord]) -> list[AppRecord]:
 
 def _format_entry(app: AppRecord) -> str:
     suffix = f" - {app.description}" if app.description else ""
-    return f"* [{app.name}]({app.primary_url}) — confidence `{app.confidence:.2f}`{suffix}"
+    download_tag = "downloadable" if app.has_downloads else "no-downloads"
+    return f"* [{app.name}]({app.primary_url}) — source `{app.source}` — status `{download_tag}` — confidence `{app.confidence:.2f}`{suffix}"
 
 
 def write_markdown(path: Path, apps: Iterable[AppRecord]) -> None:
     sorted_apps = _sort(apps)
     confirmed = [app for app in sorted_apps if not app.review_needed]
     review = [app for app in sorted_apps if app.review_needed]
+    by_source = Counter(app.source for app in sorted_apps)
     lines = [
         "## Shizuku Finder Report",
         "",
@@ -29,10 +32,15 @@ def write_markdown(path: Path, apps: Iterable[AppRecord]) -> None:
         "> This file is generated. Do not edit manually.",
         "",
         f"Generated entries: **{len(sorted_apps)}**",
+        f"Confirmed entries: **{len(confirmed)}**",
+        f"Review-needed entries: **{len(review)}**",
         "",
-        "### Confirmed / likely matches",
+        "### Source breakdown",
         "",
     ]
+    for source, count in sorted(by_source.items()):
+        lines.append(f"* `{source}`: **{count}**")
+    lines.extend(["", "### Confirmed / likely matches", ""])
     for app in confirmed:
         lines.append(_format_entry(app))
     lines.extend(["", "### Review-needed matches", ""])
@@ -66,6 +74,20 @@ def write_diff_markdown(path: Path, diff: DiffResult) -> None:
     lines.extend(["", "### Changed", ""])
     lines.extend(_format_entry(app) for app in diff.changed)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_diff_json(path: Path, diff: DiffResult) -> None:
+    payload = {
+        "added": [app.canonical_id for app in diff.added],
+        "removed": [app.canonical_id for app in diff.removed],
+        "changed": [app.canonical_id for app in diff.changed],
+        "counts": {
+            "added": len(diff.added),
+            "removed": len(diff.removed),
+            "changed": len(diff.changed),
+        },
+    }
+    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def write_json(path: Path, apps: Iterable[AppRecord]) -> None:

@@ -51,6 +51,7 @@ jobs:
             --csv-file summary.csv \
             --review-file REVIEW_NEEDED.md \
             --diff-file DIFF.md \
+            --diff-json-file DIFF.json \
             --run-summary-file RUN_SUMMARY.json
       - name: Publish run summary
         run: |
@@ -80,6 +81,6 @@ jobs:
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add SUMMARY.md summary.json summary.csv REVIEW_NEEDED.md DIFF.md RUN_SUMMARY.json cache || true
+          git add SUMMARY.md summary.json summary.csv REVIEW_NEEDED.md DIFF.md DIFF.json RUN_SUMMARY.json cache || true
           git diff --cached --quiet || git commit -m "Update generated scan reports"
           git push
