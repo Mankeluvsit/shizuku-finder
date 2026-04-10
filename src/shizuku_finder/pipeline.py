@@ -4,10 +4,11 @@ from shizuku_finder.models import AppRecord
 from shizuku_finder.normalization import normalize_name, normalize_url
 
 _SOURCE_PRIORITY = {
-    "fdroid": 5,
-    "github_code": 4,
-    "github_meta": 3,
-    "gitlab": 2,
+    "fdroid": 6,
+    "github_code": 5,
+    "github_meta": 4,
+    "gitlab": 3,
+    "bitbucket": 2,
     "codeberg": 1,
 }
 

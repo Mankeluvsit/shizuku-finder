@@ -1,0 +1,26 @@
+{
+  "values": [
+    {
+      "name": "BitbucketShizuku",
+      "full_name": "example/BitbucketShizuku",
+      "links": {
+        "clone": [
+          {"name": "https", "href": "https://bitbucket.org/example/bitbucketshizuku.git"}
+        ],
+        "html": {"href": "https://bitbucket.org/example/bitbucketshizuku"}
+      },
+      "description": "Bitbucket repo using Shizuku"
+    },
+    {
+      "name": "BitbucketNoMatch",
+      "full_name": "example/BitbucketNoMatch",
+      "links": {
+        "clone": [
+          {"name": "https", "href": "https://bitbucket.org/example/bitbucketnomatch.git"}
+        ],
+        "html": {"href": "https://bitbucket.org/example/bitbucketnomatch"}
+      },
+      "description": "Should be filtered by content matching"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 from .base import BaseScanner
+from .bitbucket import BitbucketScanner
 from .codeberg import CodebergScanner
 from .fdroid import FDroidScanner
 from .github_code import GitHubCodeScanner
@@ -7,6 +8,7 @@ from .gitlab import GitLabScanner
 
 __all__ = [
     "BaseScanner",
+    "BitbucketScanner",
     "CodebergScanner",
     "FDroidScanner",
     "GitHubCodeScanner",

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
 import httpx
 
 
@@ -39,7 +37,7 @@ class HttpJsonClient:
         if isinstance(payload, list):
             return payload
         if isinstance(payload, dict):
-            for key in ("data", "repos", "items", "projects"):
+            for key in ("data", "repos", "items", "projects", "values"):
                 value = payload.get(key)
                 if isinstance(value, list):
                     return value

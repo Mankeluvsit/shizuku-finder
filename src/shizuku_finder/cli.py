@@ -12,7 +12,7 @@ from .readme_index import ReadmeIndex
 from .reporting import write_csv, write_diff_json, write_diff_markdown, write_json, write_markdown, write_review_markdown
 from .run_summary import write_run_summary
 from .scoring import apply_scoring
-from .scanners import CodebergScanner, FDroidScanner, GitHubCodeScanner, GitHubMetaScanner, GitLabScanner
+from .scanners import BitbucketScanner, CodebergScanner, FDroidScanner, GitHubCodeScanner, GitHubMetaScanner, GitLabScanner
 from .storage import SQLiteCache
 
 
@@ -32,6 +32,7 @@ def run_scan(config: AppConfig) -> None:
         GitHubMetaScanner(config.github_auth, _default_repo_cache_path()),
         GitLabScanner(_default_repo_cache_path()),
         CodebergScanner(_default_repo_cache_path()),
+        BitbucketScanner(_default_repo_cache_path()),
     ]
     cache = SQLiteCache(config.database_path)
     previous = cache.load_all()
