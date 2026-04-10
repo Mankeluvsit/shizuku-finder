@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: scheduled-scan-${{ github.ref }}
+  cancel-in-progress: false
+
 env:
   TARGET_LIST_REPO: ${{ vars.TARGET_LIST_REPO }}
   TARGET_LIST_PATH: ./list
@@ -20,6 +24,10 @@ jobs:
       DATABASE_PATH: ./cache/shizuku_finder.sqlite3
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: true
       - name: Checkout target list repo
         if: env.TARGET_LIST_REPO != ''
         uses: actions/checkout@v4
@@ -77,10 +85,28 @@ jobs:
           if payload['status'] == 'failed':
               sys.exit('All scanners failed; refusing to publish empty run.')
           PY
+      - name: Upload generated artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scheduled-scan-artifacts
+          path: |
+            SUMMARY.md
+            summary.json
+            summary.csv
+            REVIEW_NEEDED.md
+            DIFF.md
+            DIFF.json
+            RUN_SUMMARY.json
+          if-no-files-found: warn
       - name: Commit generated reports
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add SUMMARY.md summary.json summary.csv REVIEW_NEEDED.md DIFF.md DIFF.json RUN_SUMMARY.json cache || true
-          git diff --cached --quiet || git commit -m "Update generated scan reports"
-          git push
+          if git diff --cached --quiet; then
+            echo "No generated changes to commit."
+            exit 0
+          fi
+          git commit -m "Update generated scan reports"
+          git push origin HEAD:${{ github.ref_name }}

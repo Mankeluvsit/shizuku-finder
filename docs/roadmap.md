@@ -10,17 +10,17 @@ _Last updated: 2026-04-10_
 | 2. Scanner migration and orchestration | 93% |
 | 3. Filtering, evidence, confidence | 90% |
 | 4. Output redesign and diffing | 90% |
-| 5. Workflow automation and publication | 86% |
+| 5. Workflow automation and publication | 92% |
 | 6. New source expansion | 62% |
 | 7. Testing and cutover readiness | 97% |
 
-**Overall estimated completion:** 91%
+**Overall estimated completion:** 92%
 
 ## Current pass highlights
-- Added Bitbucket Cloud as another code-host source using the current Bitbucket Cloud repositories and downloads APIs.
-- Extended the active CLI pipeline to include Bitbucket results.
-- Updated dedupe/source-precedence rules to account for Bitbucket.
-- Added fixture-driven validation for Bitbucket scanner filtering and download detection.
+- Hardened the scheduled GitHub Actions workflow for branch-safe commit-back.
+- Switched checkout to use the active branch ref with full history instead of relying on detached-head defaults.
+- Added artifact upload so generated outputs are still recoverable even if commit-back fails.
+- Updated workflow validation tests to assert branch-aware push and artifact fallback behavior.
 
 ## Approved source expansion shortlist
 
@@ -77,6 +77,5 @@ These are approved for roadmap planning only and are not yet implementation-comp
 15. APKPure
 
 ## Next pass targets
-- optional further source expansion beyond code hosts
 - final confidence/source tuning pass if needed
 - final cleanup pass across docs, env examples, and minor workflow polish

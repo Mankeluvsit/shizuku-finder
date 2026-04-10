@@ -17,3 +17,7 @@ def test_scheduled_workflow_publishes_diff_and_run_summary_and_supports_target_r
     assert '--run-summary-file RUN_SUMMARY.json' in workflow
     assert 'Publish run summary' in workflow
     assert 'Enforce minimum successful output' in workflow
+    assert 'actions/upload-artifact@v4' in workflow
+    assert 'git push origin HEAD:${{ github.ref_name }}' in workflow
+    assert 'fetch-depth: 0' in workflow
+    assert 'persist-credentials: true' in workflow
