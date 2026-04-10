@@ -1,0 +1,18 @@
+{
+  "data": [
+    {
+      "name": "CodebergShizuku",
+      "full_name": "example/CodebergShizuku",
+      "clone_url": "https://codeberg.org/example/CodebergShizuku.git",
+      "html_url": "https://codeberg.org/example/CodebergShizuku",
+      "description": "Codeberg project using Shizuku"
+    },
+    {
+      "name": "CodebergNoMatch",
+      "full_name": "example/CodebergNoMatch",
+      "clone_url": "https://codeberg.org/example/CodebergNoMatch.git",
+      "html_url": "https://codeberg.org/example/CodebergNoMatch",
+      "description": "Should be filtered by content matching"
+    }
+  ]
+}
